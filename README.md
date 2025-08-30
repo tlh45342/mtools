@@ -1,3 +1,9 @@
+**Purpose**
+
+This is replacment? for some mtools functions as MTOOLS for Windows does not seem to be fairly repliably applicable.  In short this something simple that I personally think has been made to complicated.  I think some of this stuff has existed at some time, but the facts are there are some CYGWIN64 items that I think have existed in the past but can't be relied on currently.
+
+I am not even going to touch "config" for Windows as I don't think that is mature - or has been broken; or it's probably just me and I am invoking it wrong.
+
 **File & directory operations**
 
 - `mdir` – display an MS‑DOS directory
