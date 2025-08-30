@@ -1,20 +1,20 @@
 # Makefile for minimal mtools-like utilities (mformat, mdir, minfo, mcp, mdel)
 
 # ---- Toolchain ----
-CC       ?= gcc
-CFLAGS   ?= -Wall -Wextra -O2
-CPPFLAGS ?=
-LDFLAGS  ?=
-LDLIBS   ?=
+CC        ?= gcc
+CFLAGS    ?= -Wall -Wextra -O2
+CPPFLAGS  ?=
+LDFLAGS   ?=
+LDLIBS    ?=
+INSTALL   ?= install
+STRIP     ?= strip
 
-# ---- Host detection ----
+# ---- Host detection (for install path & exe suffix) ----
 UNAME_S := $(shell uname -s 2>/dev/null)
-# If uname fails (rare), assume Windows_NT
 ifeq ($(strip $(UNAME_S)),)
   UNAME_S := Windows_NT
 endif
 
-# Windows-like environments: Cygwin / MSYS / MinGW
 HOST_WIN := 0
 ifneq (,$(findstring CYGWIN,$(UNAME_S)))
   HOST_WIN := 1
@@ -26,7 +26,7 @@ ifneq (,$(findstring MSYS,$(UNAME_S)))
   HOST_WIN := 1
 endif
 
-# ---- Executable suffix (Windows/Cygwin/MinGW => .exe) ----
+# ---- Executable suffix (Windows-like => .exe) ----
 EXEEXT := $(if $(findstring 1,$(HOST_WIN)),.exe,)
 
 # ---- Install locations ----
@@ -56,7 +56,7 @@ all: $(BUILD_DIR) $(BINARIES)
 $(BUILD_DIR):
 	mkdir -p "$(BUILD_DIR)"
 
-# ---- Pattern rule: src/<name>.c -> build/<name>.exe ----
+# ---- Pattern rule: src/<name>.c -> build/<name>$(EXEEXT) ----
 $(BUILD_DIR)/%$(EXEEXT): $(SRC_DIR)/%.c | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ $(LDFLAGS) $(LDLIBS)
 
@@ -68,30 +68,36 @@ $(PROGS): %: $(BUILD_DIR)/%$(EXEEXT)
 # ---- Install / uninstall ----
 .PHONY: install uninstall install-strip show-config
 install: $(BINARIES)
-	@echo "Host           : $(UNAME_S)  (WINDOWS-like=$(HOST_WIN))"
+	@echo "Host           : $(UNAME_S) (WINDOWS-like=$(HOST_WIN))"
 	@echo "Installing to  : $(DESTDIR)$(BINDIR)"
 	mkdir -p "$(DESTDIR)$(BINDIR)"
-	cp -f $(BINARIES) "$(DESTDIR)$(BINDIR)"
+	@set -e; for b in $(BINARIES); do \
+		n="$$(basename $$b)"; \
+		$(INSTALL) -m 0755 "$$b" "$(DESTDIR)$(BINDIR)/$$n"; \
+	done
 
-# Optional: install stripped binaries (Unix-y)
-install-strip: CFLAGS += -s
 install-strip: $(BINARIES)
-	@echo "Host           : $(UNAME_S)  (WINDOWS-like=$(HOST_WIN))"
+	@echo "Host           : $(UNAME_S) (WINDOWS-like=$(HOST_WIN))"
 	@echo "Installing (strip) to: $(DESTDIR)$(BINDIR)"
 	mkdir -p "$(DESTDIR)$(BINDIR)"
 	@set -e; for b in $(BINARIES); do \
-		strip "$$b" || true; \
-		cp -f "$$b" "$(DESTDIR)$(BINDIR)"; \
+		$(STRIP) "$$b" || true; \
+		n="$$(basename $$b)"; \
+		$(INSTALL) -m 0755 "$$b" "$(DESTDIR)$(BINDIR)/$$n"; \
 	done
 
 uninstall:
 	@echo "Uninstalling from $(DESTDIR)$(BINDIR)"
-	rm -f $(addprefix $(DESTDIR)$(BINDIR)/,$(notdir $(BINARIES)))
+	@set -e; for b in $(BINARIES); do \
+		n="$$(basename $$b)"; \
+		rm -f "$(DESTDIR)$(BINDIR)/$$n"; \
+	done
 
 # ---- Clean ----
 .PHONY: clean
 clean:
 	rm -rf "$(BUILD_DIR)"
+	# remove any test artifacts you may create
 	-rm -f floppy.img
 
 # ---- Debug helper ----
