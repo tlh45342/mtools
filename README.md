@@ -24,7 +24,6 @@ I am not even going to touch "config" for Windows as I don't think that is matur
 - `mlabel` – set the volume label
 
 
-
 mformat.exe -i floppy.img ::
 
   - by default will create 1M image file.
@@ -49,24 +48,6 @@ Note:
 - It does **not** currently support subdirectories or FAT32 root in data clusters.
 - File name matching is simplistic. A more robust approach would normalize the 8.3 format more carefully.
 
-1. 
-
-------
-
-## ✅ Example 1: Create a 4MB FAT12/16 disk image
-
-```
-dd if=/dev/zero of=floppy.img bs=1k count=4096
-```
-
-Then:
-
-```
-mformat -i floppy.img
-```
-
-> Assumes the default is FAT12 or FAT16 based on image size and implementation logic.
-
 ------
 
 ## INSTALLATION
@@ -77,3 +58,7 @@ git clone https://github.com/tlh45342/mtools.git
 cd mtools
 make ; make install
 ```
+
+## WARNING
+
+This has NOT been tested hardly at all.  Use at your own risk.  Do NOT use this on a production system.
