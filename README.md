@@ -34,22 +34,6 @@ mdel -i floppy.img file.txt
 mcp -i floppy.img hello.txt
 mdir -i floppy.img ::
 
-
-
-### 🛠️ Sample usage
-
-```
-mdel -i floppy.img FOO.TXT
-```
-
-Note:
-
-- This implementation assumes FAT12/FAT16 where the root directory is in a fixed location.
-- It does **not** currently support subdirectories or FAT32 root in data clusters.
-- File name matching is simplistic. A more robust approach would normalize the 8.3 format more carefully.
-
-------
-
 ## INSTALLATION
 
 ```bash
