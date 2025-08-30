@@ -44,7 +44,7 @@ SRC_DIR   := src
 BUILD_DIR := build
 
 # ---- Programs & sources ----
-PROGS     := mformat mdir minfo mcp mdel
+PROGS     := mformat mdir minfo mcp mdel mmd
 SRCS      := $(addprefix $(SRC_DIR)/,$(addsuffix .c,$(PROGS)))
 BINARIES  := $(addprefix $(BUILD_DIR)/,$(addsuffix $(EXEEXT),$(PROGS)))
 
@@ -108,3 +108,4 @@ show-config:
 	@echo "PREFIX = $(PREFIX)"
 	@echo "BINDIR = $(BINDIR)"
 	@echo "DESTDIR = $(DESTDIR)"
+
