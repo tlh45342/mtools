@@ -69,4 +69,11 @@ mformat -i floppy.img
 
 ------
 
-## 
+## INSTALLATION
+
+```bash
+cd /opt
+git clone https://github.com/tlh45342/mtools.git
+cd mtools
+make ; make install
+```
