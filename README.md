@@ -23,11 +23,7 @@ I am not even going to touch "config" for Windows as I don't think that is matur
 - `mformat` – create an MS‑DOS (FAT) filesystem on a disk/image
 - `mlabel` – set the volume label
 
-
-mformat.exe -i floppy.img ::
-
-  - by default will create 1M image file.
-
+mformat -i flooopy.img ::
 mdir -i floppy.img ::
 minfo -i floopy.img ::
 mdel -i floppy.img file.txt
