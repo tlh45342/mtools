@@ -5,7 +5,7 @@
 //  - 8.3 names only (no LFN)
 //  - Timestamps are zeroed
 // Build: cc -Wall -Wextra -O2 src/mmd.c -o build/mmd
-// Usage: mmd <image_file> <NEWDIR>    (NEWDIR must be 8.3 name)
+// Usage: mmd -i IMAGE NEWDIR    (NEWDIR must be 8.3)
 
 #define _FILE_OFFSET_BITS 64
 #include <stdio.h>
@@ -356,13 +356,34 @@ static int init_dot_entries(FILE *f, const FatGeom *g, uint32_t clus, uint16_t p
 
 // --- CLI ---
 static void usage(const char *prog) {
-    fprintf(stderr, "Usage: %s <fat12/16-image> <NEWDIR-8.3>\n", prog);
+    fprintf(stderr,
+        "Usage: %s -i IMAGE NEWDIR\n"
+        "  -i IMAGE   FAT12/16 disk image file to modify\n"
+        "  NEWDIR     8.3 name of directory to create in root\n",
+        prog);
 }
 
 int main(int argc, char **argv) {
-    if (argc != 3) { usage(argv[0]); return 2; }
-    const char *img = argv[1];
-    const char *newdir = argv[2];
+    const char *img = NULL;
+    const char *newdir = NULL;
+
+    // minimal option parsing: only -i IMAGE
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-i") == 0) {
+            if (i + 1 >= argc) { usage(argv[0]); return 2; }
+            img = argv[++i];
+        } else if (!newdir) {
+            newdir = argv[i];
+        } else {
+            usage(argv[0]);
+            return 2;
+        }
+    }
+
+    if (!img || !newdir) {
+        usage(argv[0]);
+        return 2;
+    }
 
     uint8_t name[8], ext[3];
     if (pack_83(newdir, name, ext) != 0) {
@@ -441,4 +462,3 @@ int main(int argc, char **argv) {
     printf("Created directory %s (cluster %u)\n", newdir, clus);
     return 0;
 }
-
